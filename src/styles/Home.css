@@ -1,0 +1,135 @@
+/* src/styles/Home.css */
+
+/* Overall Page Layout */
+.home-container {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Header Bar */
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0f0f0; /* Light gray background for the header */
+  padding: 10px 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Logo Styling (Aligned Left) */
+.home-header-left .home-logo {
+  max-height: 50px; /* Adjust this to control the logo size */
+}
+
+/* Buttons Styling (Aligned Right) */
+.home-header-right {
+  display: flex;
+  gap: 10px;
+}
+
+.home-button {
+  background-color: #d50000; /* Red button */
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+.home-button:hover {
+  background-color: #b40000; /* Darker red on hover */
+}
+
+/* Main Content */
+.home-main {
+  margin-top: 20px;
+  padding: 20px;
+}
+
+.home-title {
+  font-size: 2.5em;
+  color: #d50000;
+  margin-bottom: 10px;
+}
+
+.home-tagline {
+  font-size: 1.2em;
+  color: #333;
+  margin-bottom: 40px;
+}
+
+.intro {
+	text-align: center;
+	margin: 40px 0;
+	padding: 50px 10%;
+	background-color: #f9f9f9;
+}
+
+.features {
+	display: flex;
+	justify-content: space-around;
+	padding: 50px 5%;
+	background-color: #ffffff;
+}
+
+.feature-item img {
+	height: auto;
+	max-width: 100%;
+	transition: transform 0.3s ease;
+	margin-bottom: 10px;
+}
+
+.feature-item {
+	text-align: center;
+	width: 30%;
+}
+
+.feature-item:hover img {
+	transform: scale(1.05);
+}
+
+.home-about, .home-developer-story {
+  margin-bottom: 40px;
+}
+
+.feature-item h3 {
+	margin-top: 20px;
+	color: #007bff;
+}
+
+.feature-item p {
+	font-size: 1em;
+	color: #666;
+}
+
+.home-about h2, .home-developer-story h2 {
+  font-size: 1.8em;
+  color: #333;
+}
+
+.home-footer {
+  margin-top: 40px;
+  background-color: #003366;
+  padding: 20px;
+  text-align: center;
+}
+
+.home-links .home-link {
+  margin: 0 10px;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.home-link:hover {
+  text-decoration: underline;
+}
