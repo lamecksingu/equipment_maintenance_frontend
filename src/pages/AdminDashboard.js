@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash, faEdit, faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import Modal from 'react-modal'; // modal for pop up edit
 import '../styles/AdminDashboard.css'; // We'll add this for custom styles
+
+// set the app element for accessibility
+Modal.setAppElement('#root');
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
@@ -128,40 +132,55 @@ const handleEditUser = (user) => {
     };
 
     // Function to update user data
-    const handleUpdateUser = async (e) => {
-        e.preventDefault();
+const handleUpdateUser = async (e) => {
+    e.preventDefault();
 
-        if (!editUser) {
-            alert('No user selected for editing.');
-            return;
-        }
+    if (!editUser) {
+        alert('No user selected for editing.');
+        return;
+    }
 
-        const userId = editUser.id;
-	    // build the updatedData object conditionally
-        const updatedData = {
-            username: newUser.username,
-            email: newUser.email,
-            password: newUser.password,
-            role: newUser.role,
-	};
-
-	    // Only add technician-specific fields if the role is technician
-	    if (newUser.role === 'technician') {
-		    updatedData.specialization = newUser.specialization;
-		    updatedData.experience_level = newUser.experience_level
-        }
-
-        try {
-            const response = await axios.put(`http://localhost:5000/api/users/${userId}`, updatedData);
-            console.log('User updated successfully:', response.data);
-            alert('User updated successfully!');
-            setShowEditForm(false); // Hide the edit form
-            fetchUsers(); // Refresh the list of users
-        } catch (error) {
-            console.error('Error updating user:', error);
-            setErrorMessage('Error updating user. Please try again.');
-        }
+    const userId = editUser.id;
+    const updatedData = {
+        username: newUser.username,
+        email: newUser.email,
+        role: newUser.role,
     };
+
+    // Only include password if it has been changed
+    if (newUser.password) {
+        updatedData.password = newUser.password; // Only included if not empty
+    }
+
+    try {
+        // Update user data in the users table
+        await axios.put(`http://localhost:5000/api/users/${userId}`, updatedData);
+        console.log('User updated successfully:', updatedData);
+        alert('User updated successfully!');
+
+        // If the role has been changed to 'technician', handle technician data
+        if (newUser.role === 'technician') {
+            const technicianData = {
+                user_id: userId, // Reference to the updated user
+                specialization: newUser.specialization,
+                experience_level: newUser.experience_level,
+            };
+
+		console.log('Technician data:', technicianData);
+
+            // Call the API to create or update the technician record
+            await axios.post('http://localhost:5000/api/technicians', technicianData);
+        }
+
+        setShowEditForm(false); // Hide the edit form
+        fetchUsers(); // Refresh the list of users
+    } catch (error) {
+        console.error('Error updating user:', error);
+        setErrorMessage('Error updating user. Please try again.');
+        alert('Error updating user. Please try again.');
+    }
+};
+
 
 
 	// Handle for deleting a user
@@ -261,7 +280,7 @@ const handleDeleteUser = async (id) => {
                 </form>
             )}
 
-	    {/* Edit Form */}
+	    {/* Edit Form 
 {showEditForm && (
     <div className="edit-form">
         <h2>Edit User</h2>
@@ -310,7 +329,8 @@ const handleDeleteUser = async (id) => {
                 </select>
             </label>
 
-            {/* Display technician-specific fields if role is 'technician' */}
+            {/* Display technician-specific fields if role is 'technician' 
+
             {newUser.role === 'technician' && (
                 <>
                     <label>
@@ -337,6 +357,85 @@ const handleDeleteUser = async (id) => {
         </form>
     </div>
 )}
+*/}
+
+	    <Modal
+                isOpen={showEditForm}
+                onRequestClose={() => setShowEditForm(false)} // Close modal when clicking outside
+                contentLabel="Edit User Form"
+                className="modal" // You can style this class in CSS
+                overlayClassName="modal-overlay" // Custom style for the overlay
+            >
+                <h2>Edit User</h2>
+                <form onSubmit={handleUpdateUser} className="edit-user-form">
+                    <label>
+                        Username:
+                        <input
+                            type="text"
+                            name="username"
+                            value={newUser.username}
+                            onChange={handleInputChange}
+                            required
+                        />
+                    </label>
+                    <label>
+                        Email:
+                        <input
+                            type="email"
+                            name="email"
+                            value={newUser.email}
+                            onChange={handleInputChange}
+                            required
+                        />
+                    </label>
+                    <label>
+                        Password:
+                        <input
+                            type="password"
+                            name="password"
+                            value={newUser.password}
+                            onChange={handleInputChange}
+                        />
+                    </label>
+                    <label>
+                        Role:
+                        <select
+                            name="role"
+                            value={newUser.role}
+                            onChange={handleInputChange}
+                        >
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                            <option value="technician">Technician</option>
+                        </select>
+                    </label>
+
+                    {newUser.role === 'technician' && (
+                        <>
+                            <label>
+                                Specialization:
+                                <input
+                                    type="text"
+                                    name="specialization"
+                                    value={newUser.specialization}
+                                    onChange={handleInputChange}
+                                />
+                            </label>
+                            <label>
+                                Experience Level:
+                                <input
+                                    type="text"
+                                    name="experience_level"
+                                    value={newUser.experience_level}
+                                    onChange={handleInputChange}
+                                />
+                            </label>
+                        </>
+                    )}
+                    <button type="submit">Update</button>
+                </form>
+                <button onClick={() => setShowEditForm(false)}>Close</button>
+            </Modal>
 
 
             {/* Table of users */}
